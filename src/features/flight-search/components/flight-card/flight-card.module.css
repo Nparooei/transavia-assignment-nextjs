@@ -1,0 +1,160 @@
+.card {
+  display: grid;
+  grid-template-columns: 150px minmax(300px, 1fr) 130px 112px;
+  align-items: center;
+  gap: 22px;
+  padding: 22px 24px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: var(--surface);
+  box-shadow: 0 7px 25px rgba(30, 64, 57, 0.05);
+}
+
+.flightNumber {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.flightNumber > div {
+  display: grid;
+  gap: 2px;
+}
+
+.flightNumber span,
+.price span,
+.price small {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.flightNumber strong {
+  font-size: 14px;
+}
+
+.mark {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--green-950);
+  background: var(--lime);
+}
+
+.mark svg {
+  width: 22px;
+}
+
+.journey {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 18px;
+}
+
+.airportTime {
+  display: grid;
+  gap: 3px;
+}
+
+.airportTime strong {
+  font-size: 22px;
+  letter-spacing: -0.4px;
+}
+
+.airportTime span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.arrival {
+  text-align: right;
+}
+
+.route {
+  display: grid;
+  grid-template-rows: auto 20px auto;
+  row-gap: 2px;
+  text-align: center;
+}
+
+.route > span,
+.route small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.route > div {
+  position: relative;
+  align-self: center;
+  border-bottom: 1px solid #a9b9b5;
+}
+
+.route > div::before,
+.route > div::after {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--green-700);
+}
+
+.route > div::before {
+  left: 0;
+}
+
+.route > div::after {
+  right: 0;
+}
+
+.route svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  transform: translate(-50%, -50%);
+  color: var(--green-700);
+  background: var(--surface);
+}
+
+.price {
+  display: grid;
+}
+
+.price strong {
+  color: var(--green-900);
+  font-size: 21px;
+  letter-spacing: -0.5px;
+}
+
+@media (max-width: 960px) {
+  .card {
+    grid-template-columns: 120px 1fr 115px;
+  }
+
+  .select {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 650px) {
+  .card {
+    grid-template-columns: 1fr auto;
+    gap: 21px 14px;
+    padding: 20px;
+  }
+
+  .journey {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .price {
+    text-align: right;
+  }
+}

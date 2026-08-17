@@ -1,0 +1,28 @@
+.link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 13px 16px;
+  border-radius: 10px;
+  color: white;
+  background: var(--green-900);
+  font-weight: 780;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.18s, background 0.18s, box-shadow 0.18s;
+}
+
+.link svg {
+  width: 18px;
+}
+
+.link[data-hovered] {
+  background: var(--green-700);
+  transform: translateY(-1px);
+}
+
+.link[data-focus-visible] {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}

@@ -1,0 +1,29 @@
+.form {
+  display: grid;
+  grid-template-columns: 1.25fr 1.25fr 0.82fr auto;
+  align-items: end;
+  gap: 14px;
+  padding: 25px;
+  border: 1px solid rgba(8, 63, 54, 0.07);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+@media (max-width: 960px) {
+  .form {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .submit {
+    width: 100%;
+  }
+}
+
+@media (max-width: 650px) {
+  .form {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 18px;
+  }
+}

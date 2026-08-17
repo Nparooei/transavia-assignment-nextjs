@@ -1,0 +1,112 @@
+.combo {
+  min-width: 0;
+}
+
+.trigger {
+  width: 30px;
+  height: 34px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  color: var(--green-900);
+  background: transparent;
+  cursor: pointer;
+}
+
+.trigger[data-hovered],
+.trigger[data-pressed] {
+  background: var(--green-100);
+}
+
+.trigger[data-focus-visible] {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.trigger svg {
+  width: 16px;
+  transition: transform 0.18s ease;
+}
+
+.combo[data-open] .trigger svg {
+  transform: rotate(180deg);
+}
+
+.popover {
+  width: var(--trigger-width);
+  max-height: min(360px, var(--available-height));
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 16px 42px rgba(7, 63, 54, 0.18);
+}
+
+.popover[data-entering] {
+  animation: popover-in 0.14s ease-out;
+}
+
+.list {
+  max-height: min(350px, var(--available-height));
+  margin: 0;
+  padding: 7px;
+  overflow: auto;
+  outline: none;
+}
+
+.option {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 11px;
+  border-radius: 8px;
+  outline: none;
+  cursor: default;
+}
+
+.option strong {
+  color: var(--green-900);
+  font-size: 13px;
+}
+
+.option span {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.option[data-focused] {
+  background: #edf8f4;
+}
+
+.option[data-selected] {
+  color: white;
+  background: var(--green-900);
+}
+
+.option[data-selected] strong,
+.option[data-selected] span {
+  color: inherit;
+}
+
+.option[data-focus-visible] {
+  outline: 2px solid var(--green-600);
+  outline-offset: -2px;
+}
+
+@keyframes popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

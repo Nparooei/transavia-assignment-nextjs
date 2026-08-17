@@ -1,0 +1,52 @@
+.field {
+  min-width: 0;
+}
+
+.label {
+  display: block;
+  margin: 0 0 8px 3px;
+  color: #46524f;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.25px;
+}
+
+.inputShell {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fbfcfc;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.inputShell:focus-within {
+  border-color: var(--green-600);
+  background: white;
+  box-shadow: 0 0 0 3px rgba(0, 163, 127, 0.12);
+}
+
+.inputShell > svg {
+  width: 20px;
+  flex: 0 0 auto;
+  color: var(--green-700);
+}
+
+.inputShell input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  color: var(--ink);
+  background: transparent;
+  font-size: 14px;
+  font-weight: 620;
+}
+
+.inputShell input::placeholder {
+  color: #8b9694;
+  font-weight: 480;
+}

@@ -1,0 +1,9 @@
+.field {
+  min-width: 0;
+}
+
+@media (max-width: 650px) {
+  .field {
+    width: 100%;
+  }
+}
