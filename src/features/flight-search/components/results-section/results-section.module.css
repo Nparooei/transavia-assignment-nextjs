@@ -74,6 +74,51 @@
   gap: 13px;
 }
 
+.resultsSkeleton {
+  display: grid;
+  gap: 13px;
+}
+
+.loadingLabel {
+  margin: 0 0 5px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.skeletonHeading,
+.skeletonCard {
+  border-radius: 15px;
+  background: linear-gradient(
+    100deg,
+    var(--line) 25%,
+    var(--surface) 45%,
+    var(--line) 65%
+  );
+  background-size: 220% 100%;
+  animation: results-loading 1.4s ease-in-out infinite;
+}
+
+.skeletonHeading {
+  width: min(360px, 70%);
+  height: 54px;
+  margin-bottom: 6px;
+}
+
+.skeletonCard {
+  height: 104px;
+  border: 1px solid var(--line);
+}
+
+@keyframes results-loading {
+  from {
+    background-position: 100% 0;
+  }
+
+  to {
+    background-position: -100% 0;
+  }
+}
+
 @media (max-width: 650px) {
   .results {
     padding-block: 47px 65px;
@@ -92,5 +137,9 @@
   .heading {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .skeletonCard {
+    height: 160px;
   }
 }

@@ -1,11 +1,26 @@
-import type { RefObject } from "react";
-import { formatDate } from "@/features/flight-search/lib/flights";
+"use client";
+
+import { lazy, Suspense, type RefObject } from "react";
 import { Button } from "@/components/ui/button/button";
 import { Icon } from "@/components/ui/icon/icon";
 import { Typography } from "@/components/ui/typography/typography";
-import { FlightCard } from "../flight-card/flight-card";
 import type { FlightSearchState } from "@/features/flight-search/types/search";
 import styles from "./results-section.module.css";
+
+const FlightResultsList = lazy(
+  () => import("../flight-results-list/flight-results-list"),
+);
+
+function FlightResultsSkeleton() {
+  return (
+    <div className={styles.resultsSkeleton} role="status">
+      <p className={styles.loadingLabel}>Preparing flight results…</p>
+      <div className={styles.skeletonHeading} />
+      <div className={styles.skeletonCard} />
+      <div className={styles.skeletonCard} />
+    </div>
+  );
+}
 
 interface ResultsSectionProps {
   error: string | null;
@@ -66,23 +81,12 @@ export function ResultsSection({
       )}
 
       {searchState && searchState.results.length > 0 && (
-        <div>
-          <div className={styles.heading}>
-            <div>
-              <Typography variant="eyebrow" tone="accent">Choose your flight</Typography>
-              <Typography as="h2" variant="heading">Amsterdam to {resultDestinationName}</Typography>
-              <Typography variant="body">{formatDate(searchState.criteria.departureDate)}</Typography>
-            </div>
-            <span className={styles.count}>
-              {searchState.results.length} {searchState.results.length === 1 ? "flight" : "flights"}
-            </span>
-          </div>
-          <div className={styles.flightList}>
-            {searchState.results.map((offer) => (
-              <FlightCard key={offer.outboundFlight.id} offer={offer} />
-            ))}
-          </div>
-        </div>
+        <Suspense fallback={<FlightResultsSkeleton />}>
+          <FlightResultsList
+            resultDestinationName={resultDestinationName}
+            searchState={searchState}
+          />
+        </Suspense>
       )}
     </section>
   );
