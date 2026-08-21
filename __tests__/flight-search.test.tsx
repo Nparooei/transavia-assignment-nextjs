@@ -3,6 +3,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import axe from "axe-core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { SWRConfig } from "swr";
 import { FlightSearchConfigProvider } from "@/features/flight-search/components/flight-search-config-provider/flight-search-config-provider";
 import { FlightSearchPage } from "@/features/flight-search/components/flight-search-page/flight-search-page";
 import type {
@@ -10,12 +11,6 @@ import type {
   FlightOffer,
   FlightSearchConfig,
 } from "@/features/flight-search/types/flight";
-
-const { push } = vi.hoisted(() => ({ push: vi.fn() }));
-
-vi.mock("next/navigation", () => ({
-  useRouter: () => ({ push }),
-}));
 
 const airports: Airport[] = [
   { ItemName: "AMS", AirportName: "Amsterdam (Schiphol)", Description: "Amsterdam (Schiphol), Netherlands" },
@@ -58,15 +53,27 @@ const alcCriteria = {
 
 function ConfiguredPage(props: ComponentProps<typeof FlightSearchPage>) {
   return (
-    <FlightSearchConfigProvider config={flightSearchConfig}>
-      <FlightSearchPage {...props} />
-    </FlightSearchConfigProvider>
+    <SWRConfig value={{ provider: () => new Map() }}>
+      <FlightSearchConfigProvider config={flightSearchConfig}>
+        <FlightSearchPage {...props} />
+      </FlightSearchConfigProvider>
+    </SWRConfig>
   );
 }
 
 describe("FlightSearchPage", () => {
+  const browserFetch = vi.fn();
+
   beforeEach(() => {
-    push.mockReset();
+    browserFetch.mockReset();
+    browserFetch.mockImplementation(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      return new Response(
+        JSON.stringify({ flights: url.includes("destination=BCN") ? [] : flights }),
+        { status: 200, headers: { "Content-Type": "application/json" } },
+      );
+    });
+    vi.stubGlobal("fetch", browserFetch);
     window.history.replaceState({}, "", "/");
   });
 
@@ -113,7 +120,7 @@ describe("FlightSearchPage", () => {
     expect(screen.getByLabelText("Departure date")).toHaveValue("2022-11-20");
   });
 
-  it("resets local draft and validation state when the committed route changes", async () => {
+  it("resets local draft and validation state when the initial route changes", async () => {
     const user = userEvent.setup();
     const { rerender } = render(<ConfiguredPage />);
 
@@ -123,10 +130,7 @@ describe("FlightSearchPage", () => {
     expect(screen.getByRole("alert")).toHaveTextContent("Choose a valid airport");
 
     rerender(
-      <ConfiguredPage
-        initialUrlState={alcCriteria}
-        initialSearchState={{ criteria: alcCriteria, results: flights }}
-      />,
+      <ConfiguredPage initialUrlState={alcCriteria} />,
     );
 
     expect(screen.getByRole("combobox", { name: "Origin" })).toHaveValue(
@@ -137,26 +141,20 @@ describe("FlightSearchPage", () => {
     );
     expect(screen.getByLabelText("Departure date")).toHaveValue("2022-11-10");
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-    expect(screen.getByText("HV6143")).toBeInTheDocument();
+    expect(await screen.findByText("HV6143")).toBeInTheDocument();
   });
 
-  it("renders server-provided results without a browser API request", () => {
-    const browserFetch = vi.fn();
-    vi.stubGlobal("fetch", browserFetch);
+  it("fetches a complete initial search through the flight API route", async () => {
+    render(<ConfiguredPage initialUrlState={alcCriteria} />);
 
-    render(
-      <ConfiguredPage
-        initialUrlState={alcCriteria}
-        initialSearchState={{ criteria: alcCriteria, results: flights }}
-      />,
+    expect(await screen.findByText("HV6143")).toBeInTheDocument();
+    expect(browserFetch).toHaveBeenCalledOnce();
+    expect(browserFetch).toHaveBeenCalledWith(
+      "/api/flights?origin=AMS&destination=ALC&departureDate=2022-11-10",
     );
-
-    expect(screen.getByText("HV6143")).toBeInTheDocument();
-    expect(screen.queryByRole("status")).not.toBeInTheDocument();
-    expect(browserFetch).not.toHaveBeenCalled();
   });
 
-  it("keeps edits local and navigates once with the complete submitted search", async () => {
+  it("keeps edits local, updates the URL, and calls the API on submit", async () => {
     const user = userEvent.setup();
     render(<ConfiguredPage />);
 
@@ -168,26 +166,23 @@ describe("FlightSearchPage", () => {
     await user.type(screen.getByLabelText("Departure date"), "2022-11-20");
 
     expect(window.location.pathname).toBe("/");
-    expect(push).not.toHaveBeenCalled();
+    expect(browserFetch).not.toHaveBeenCalled();
 
     await user.click(screen.getByRole("button", { name: "Search flights" }));
 
-    expect(push).toHaveBeenCalledOnce();
-    expect(push).toHaveBeenCalledWith(
-      "/flights/AMS/ALC?departureDate=2022-11-20",
-      { scroll: false },
+    await waitFor(() =>
+      expect(browserFetch).toHaveBeenCalledWith(
+        "/api/flights?origin=AMS&destination=ALC&departureDate=2022-11-20",
+      ),
     );
+    expect(window.location.pathname).toBe("/flights/AMS/ALC");
+    expect(window.location.search).toBe("?departureDate=2022-11-20");
   });
 
-  it("shows server-derived matching flights on the navigated page", () => {
-    render(
-      <ConfiguredPage
-        initialUrlState={alcCriteria}
-        initialSearchState={{ criteria: alcCriteria, results: flights }}
-      />,
-    );
+  it("shows matching flights returned by the API", async () => {
+    render(<ConfiguredPage initialUrlState={alcCriteria} />);
 
-    expect(screen.getByRole("heading", { name: "Amsterdam to Alicante" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Amsterdam to Alicante" })).toBeInTheDocument();
     expect(screen.getByText("HV6143")).toBeInTheDocument();
     expect(screen.getByText(/€50\.70/)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Select/ })).toHaveAttribute("href", "https://example.com/book");
@@ -204,30 +199,20 @@ describe("FlightSearchPage", () => {
     expect(screen.getByRole("alert")).toHaveTextContent("Choose a valid airport");
   });
 
-  it("renders a helpful empty state when no flight matches", () => {
+  it("renders a helpful empty state when the API returns no matching flight", async () => {
     const criteria = { ...alcCriteria, destination: "BCN" };
-    render(
-      <ConfiguredPage
-        initialUrlState={criteria}
-        initialSearchState={{ criteria, results: [] }}
-      />,
-    );
+    render(<ConfiguredPage initialUrlState={criteria} />);
 
-    expect(screen.getByText("No matching flights")).toBeInTheDocument();
+    expect(await screen.findByText("No matching flights")).toBeInTheDocument();
   });
 
   it("prefills the example without replacing the committed results", async () => {
     const user = userEvent.setup();
     const criteria = { ...alcCriteria, destination: "BCN" };
-    render(
-      <ConfiguredPage
-        initialUrlState={criteria}
-        initialSearchState={{ criteria, results: [] }}
-      />,
-    );
+    render(<ConfiguredPage initialUrlState={criteria} />);
 
     const destinationInput = screen.getByRole("combobox", { name: "Destination" });
-    expect(screen.getByRole("heading", { name: "No matching flights" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "No matching flights" })).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Use an available example" }));
 
@@ -239,24 +224,19 @@ describe("FlightSearchPage", () => {
     await waitFor(() => expect(destinationInput).toHaveFocus());
     // Focusing the React Aria combobox temporarily hides outside content from the accessibility tree.
     expect(screen.getByText("No matching flights")).toBeInTheDocument();
-    expect(push).not.toHaveBeenCalled();
+    expect(browserFetch).toHaveBeenCalledOnce();
   });
 
-  it("keeps results visible when submitting the already-current search URL", async () => {
+  it("revalidates when the already-current search is submitted again", async () => {
     const user = userEvent.setup();
-    render(
-      <ConfiguredPage
-        initialUrlState={alcCriteria}
-        initialSearchState={{ criteria: alcCriteria, results: flights }}
-      />,
-    );
+    render(<ConfiguredPage initialUrlState={alcCriteria} />);
+
+    expect(await screen.findByText("HV6143")).toBeInTheDocument();
+    expect(browserFetch).toHaveBeenCalledOnce();
 
     await user.click(screen.getByRole("button", { name: "Search flights" }));
 
-    expect(push).toHaveBeenCalledWith(
-      "/flights/AMS/ALC?departureDate=2022-11-10",
-      { scroll: false },
-    );
+    await waitFor(() => expect(browserFetch).toHaveBeenCalledTimes(2));
     expect(screen.getByText("HV6143")).toBeInTheDocument();
   });
 });

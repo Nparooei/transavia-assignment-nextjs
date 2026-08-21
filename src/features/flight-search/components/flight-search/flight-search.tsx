@@ -1,12 +1,19 @@
 "use client";
 
-import { SyntheticEvent, useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { SyntheticEvent, useEffect, useMemo, useRef, useState } from "react";
+import useSWR from "swr";
 import { useFlightSearchConfig } from "@/features/flight-search/components/flight-search-config-provider/flight-search-config-provider";
+import {
+  buildFlightSearchApiUrl,
+  fetchFlightSearch,
+} from "@/features/flight-search/lib/flight-search-api";
 import { airportLabel, resolveAirportCode } from "@/features/flight-search/lib/flights";
 import { buildFlightSearchUrl } from "@/features/flight-search/lib/flight-search-url";
 import { SearchCriteriaSchema } from "@/features/flight-search/schemas/flight";
-import type { FlightSearchUrlState } from "@/features/flight-search/types/flight";
+import type {
+  FlightSearchUrlState,
+  SearchCriteria,
+} from "@/features/flight-search/types/flight";
 import type { FlightSearchState } from "@/features/flight-search/types/search";
 import { ResultsSection } from "../results-section/results-section";
 import { SearchForm } from "../search-form/search-form";
@@ -14,7 +21,6 @@ import styles from "../flight-search-page/flight-search-page.module.css";
 
 interface FlightSearchProps {
   initialUrlState?: FlightSearchUrlState;
-  initialSearchState?: FlightSearchState;
 }
 
 interface SearchDraft {
@@ -23,12 +29,8 @@ interface SearchDraft {
   departureDate: string;
 }
 
-/** Owns the interactive search draft, validation and route navigation. */
-export function FlightSearch({
-  initialUrlState,
-  initialSearchState,
-}: FlightSearchProps) {
-  const router = useRouter();
+/** Owns the interactive search draft, validation and client-side API search. */
+export function FlightSearch({ initialUrlState }: FlightSearchProps) {
   const { airports, destinationCodes, maxDate, minDate } = useFlightSearchConfig();
   const airportByCode = useMemo(
     () => new Map(airports.map((airport) => [airport.ItemName, airport])),
@@ -52,15 +54,39 @@ export function FlightSearch({
     };
   });
   const { origin, destination, departureDate } = draft;
-  const [error, setError] = useState<string | null>(null);
-  const [isNavigating, startNavigation] = useTransition();
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const [submittedCriteria, setSubmittedCriteria] = useState<
+    SearchCriteria | undefined
+  >(() => {
+    const result = SearchCriteriaSchema.safeParse(initialUrlState);
+    return result.success ? result.data : undefined;
+  });
+  const apiUrl = submittedCriteria
+    ? buildFlightSearchApiUrl(submittedCriteria)
+    : null;
+  const {
+    data,
+    error: requestError,
+    isLoading,
+    isValidating,
+    mutate,
+  } = useSWR(apiUrl, fetchFlightSearch, {
+    dedupingInterval: 0,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    shouldRetryOnError: false,
+  });
   const destinationInputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLElement>(null);
-  const searchState = error ? null : initialSearchState ?? null;
+  const error = validationError ?? requestError?.message ?? null;
+  const searchState: FlightSearchState | null =
+    !error && submittedCriteria && data
+      ? { criteria: submittedCriteria, results: data.flights }
+      : null;
 
   useEffect(() => {
-    if (searchState || error) resultsRef.current?.focus();
-  }, [searchState, error]);
+    if (data || error) resultsRef.current?.focus();
+  }, [data, error]);
 
   function submitSearch(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -75,14 +101,20 @@ export function FlightSearch({
     });
 
     if (!criteriaResult.success) {
-      setError(criteriaResult.error.issues[0].message);
+      setValidationError(criteriaResult.error.issues[0].message);
       return;
     }
 
-    setError(null);
-    startNavigation(() => {
-      router.push(buildFlightSearchUrl(criteriaResult.data), { scroll: false });
-    });
+    setValidationError(null);
+    const nextApiUrl = buildFlightSearchApiUrl(criteriaResult.data);
+    setSubmittedCriteria(criteriaResult.data);
+    window.history.pushState(
+      null,
+      "",
+      buildFlightSearchUrl(criteriaResult.data),
+    );
+
+    if (nextApiUrl === apiUrl) void mutate();
   }
 
   function useExample() {
@@ -93,7 +125,7 @@ export function FlightSearch({
       destination: alicante ? airportLabel(alicante) : current.destination,
       departureDate: minDate,
     }));
-    setError(null);
+    setValidationError(null);
 
     // Let's wait until the state is updated and the input is rendered, then scroll to and focus the destination field.
     requestAnimationFrame(() => {
@@ -122,7 +154,7 @@ export function FlightSearch({
           departureDate={departureDate}
           minDate={minDate}
           maxDate={maxDate}
-          isLoading={isNavigating}
+          isLoading={isLoading || isValidating}
           onOriginChange={(value) =>
             setDraft((current) => ({ ...current, origin: value }))
           }

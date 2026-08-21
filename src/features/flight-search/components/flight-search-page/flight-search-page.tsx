@@ -3,19 +3,14 @@ import { Typography } from "@/components/ui/typography/typography";
 import { FlightSearch } from "@/features/flight-search/components/flight-search/flight-search";
 import { buildFlightSearchUrl } from "@/features/flight-search/lib/flight-search-url";
 import type { FlightSearchUrlState } from "@/features/flight-search/types/flight";
-import type { FlightSearchState } from "@/features/flight-search/types/search";
 import styles from "./flight-search-page.module.css";
 
 interface FlightSearchPageProps {
-  initialSearchState?: FlightSearchState;
   initialUrlState?: FlightSearchUrlState;
 }
 
-/** Server composition boundary; the route owns validation and data resolution. */
-export function FlightSearchPage({
-  initialSearchState,
-  initialUrlState,
-}: FlightSearchPageProps) {
+/** Server composition boundary; the client owns flight-result fetching. */
+export function FlightSearchPage({ initialUrlState }: FlightSearchPageProps) {
   return (
     <main className={styles.page}>
       <section className={styles.hero}>
@@ -35,7 +30,6 @@ export function FlightSearchPage({
 
       <FlightSearch
         key={buildFlightSearchUrl(initialUrlState ?? {})}
-        initialSearchState={initialSearchState}
         initialUrlState={initialUrlState}
       />
 

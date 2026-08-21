@@ -5,12 +5,10 @@ const navigation = vi.hoisted(() => ({
   notFound: vi.fn((): never => {
     throw new Error("TEST_NOT_FOUND");
   }),
-  push: vi.fn(),
 }));
 
 vi.mock("next/navigation", () => ({
   notFound: navigation.notFound,
-  useRouter: () => ({ push: navigation.push }),
 }));
 
 function routeProps(search?: string[], departureDate?: string) {
@@ -29,25 +27,43 @@ describe("flights page URL boundary", () => {
 
   it.each([
     {
+      name: "a malformed origin",
+      search: ["AMSTERDAM", "ALC"],
+      departureDate: "2022-11-10",
+    },
+    {
+      name: "too many route segments",
+      search: ["AMS", "ALC", "EXTRA"],
+      departureDate: "2022-11-10",
+    },
+    {
+      name: "an out-of-range date",
+      search: ["AMS", "ALC"],
+      departureDate: "2022-12-01",
+    },
+    {
       name: "an unsupported origin",
       search: ["RTM", "ALC"],
+      departureDate: "2022-11-10",
     },
     {
       name: "identical airports",
       search: ["AMS", "AMS"],
+      departureDate: "2022-11-10",
     },
     {
       name: "an unavailable destination",
       search: ["AMS", "EIN"],
+      departureDate: "2022-11-10",
     },
-  ])("rejects a complete URL with $name", async ({ search }) => {
+  ])("rejects a URL with $name", async ({ search, departureDate }) => {
     await expect(
-      FlightsPage(routeProps(search, "2022-11-10")),
+      FlightsPage(routeProps(search, departureDate)),
     ).rejects.toThrow("TEST_NOT_FOUND");
     expect(navigation.notFound).toHaveBeenCalledOnce();
   });
 
-  it("resolves a valid complete URL once and passes its results to the page", async () => {
+  it("passes a valid complete URL to the client without resolving results", async () => {
     const page = await FlightsPage(
       routeProps(["AMS", "ALC"], "2022-11-10"),
     );
@@ -56,23 +72,15 @@ describe("flights page URL boundary", () => {
     expect(page).toEqual(
       expect.objectContaining({
         props: expect.objectContaining({
-          initialSearchState: expect.objectContaining({
-            criteria: {
-              origin: "AMS",
-              destination: "ALC",
-              departureDate: "2022-11-10",
-            },
-            results: expect.arrayContaining([
-              expect.objectContaining({
-                outboundFlight: expect.objectContaining({
-                  id: "AMSALC20221110HV6143",
-                }),
-              }),
-            ]),
-          }),
+          initialUrlState: {
+            origin: "AMS",
+            destination: "ALC",
+            departureDate: "2022-11-10",
+          },
         }),
       }),
     );
+    expect(page.props).not.toHaveProperty("initialSearchState");
   });
 
   it("keeps a partial URL as an editable, unsearched page", async () => {

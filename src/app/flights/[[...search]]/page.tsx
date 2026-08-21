@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { FlightSearchPage } from "@/features/flight-search/components/flight-search-page/flight-search-page";
 import { createFlightSearchRouteStateSchema } from "@/features/flight-search/schemas/flight";
-import { resolveFlightSearchCriteria } from "@/features/flight-search/server/flight-search-service";
+import { validateFlightSearchCriteria } from "@/features/flight-search/server/flight-search-service";
 
 interface FlightsPageProps {
   params: Promise<{ search?: string[] }>;
@@ -19,17 +19,12 @@ export default async function FlightsPage({ params, searchParams }: FlightsPageP
 
   if (!result.success) notFound();
 
-  if (!result.data.departureDate) {
-    return <FlightSearchPage initialUrlState={result.data} />;
+  if (
+    result.data.departureDate &&
+    !validateFlightSearchCriteria(result.data).success
+  ) {
+    notFound();
   }
 
-  const resolution = resolveFlightSearchCriteria(result.data);
-  if (!resolution.success) notFound();
-
-  return (
-    <FlightSearchPage
-      initialSearchState={resolution.data}
-      initialUrlState={result.data}
-    />
-  );
+  return <FlightSearchPage initialUrlState={result.data} />;
 }

@@ -29,11 +29,13 @@ test.describe("flight search", () => {
     const homeResponse = await search.goto();
     expect(homeResponse).not.toBeNull();
     expect(await homeResponse?.text()).toContain("Aalborg, Denmark");
-    const navigationPayload = page.waitForResponse((response) => {
+    const flightApiResponse = page.waitForResponse((response) => {
       const url = new URL(response.url());
       return (
-        url.pathname === "/flights/AMS/ALC" &&
-        url.searchParams.has("_rsc")
+        url.pathname === "/api/flights" &&
+        url.searchParams.get("origin") === "AMS" &&
+        url.searchParams.get("destination") === "ALC" &&
+        url.searchParams.get("departureDate") === "2022-11-10"
       );
     });
     await search.search({
@@ -42,7 +44,7 @@ test.describe("flight search", () => {
       departureDate: "2022-11-10",
     });
 
-    const navigationBody = await (await navigationPayload).text();
+    const apiResponse = await flightApiResponse;
 
     await expect(page).toHaveURL(
       /\/flights\/AMS\/ALC\?departureDate=2022-11-10$/,
@@ -50,8 +52,11 @@ test.describe("flight search", () => {
     await expect(page.getByRole("heading", { name: "Amsterdam to Alicante" })).toBeVisible();
     await expect(page.getByText("HV6143")).toBeVisible();
     await expect(page.getByText("HV6145")).toBeVisible();
-    expect(browserApiRequests).toEqual([]);
-    expect(navigationBody).not.toContain("Aalborg, Denmark");
+    expect(apiResponse.status()).toBe(200);
+    expect(browserApiRequests).toHaveLength(1);
+    expect(await apiResponse.json()).toEqual(
+      expect.objectContaining({ flights: expect.any(Array) }),
+    );
   });
 
   test("restores the committed search after a hard refresh", async ({ page }) => {
@@ -59,6 +64,7 @@ test.describe("flight search", () => {
     const search = new FlightSearchPage(page);
     await page.goto("/flights/AMS/ALC?departureDate=2022-11-10");
     await expect(search.destination).toHaveValue(/ALC.*Alicante/);
+    await expect(page.getByText("HV6143")).toBeVisible();
 
     await page.reload();
 
@@ -66,7 +72,7 @@ test.describe("flight search", () => {
     await expect(search.destination).toHaveValue(/ALC.*Alicante/);
     await expect(search.departureDate).toHaveValue("2022-11-10");
     await expect(page.getByText("HV6143")).toBeVisible();
-    expect(browserApiRequests).toEqual([]);
+    expect(browserApiRequests).toHaveLength(2);
   });
 
   test("hydrates ComboBox options in a newly opened tab", async ({ context }) => {
@@ -125,7 +131,7 @@ test.describe("flight search", () => {
     }
   });
 
-  test("renders a complete search without client JavaScript", async ({ browser }) => {
+  test("does not request flight results without client JavaScript", async ({ browser }) => {
     const context = await browser.newContext({ javaScriptEnabled: false });
     const page = await context.newPage();
 
@@ -135,8 +141,7 @@ test.describe("flight search", () => {
       await expect(page.getByRole("combobox", { name: "Origin" })).toHaveValue(
         /AMS.*Amsterdam/,
       );
-      await expect(page.getByRole("heading", { name: "Amsterdam to Alicante" })).toBeVisible();
-      await expect(page.getByText("HV6143")).toBeVisible();
+      await expect(page.getByText("HV6143")).toHaveCount(0);
     } finally {
       await context.close();
     }

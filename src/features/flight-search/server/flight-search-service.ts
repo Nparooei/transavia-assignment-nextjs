@@ -73,11 +73,16 @@ export function getFlightSearchConfig(): FlightSearchConfig {
   return flightSearchConfig;
 }
 
-export function resolveFlightSearchCriteria(input: unknown): FlightSearchResolution {
+export function validateFlightSearchCriteria(input: unknown) {
   const result = AvailableSearchCriteriaSchema.safeParse(input);
   return result.success
-    ? search(result.data)
-    : { success: false, error: validationError(result.error) };
+    ? { success: true as const, data: result.data }
+    : { success: false as const, error: validationError(result.error) };
+}
+
+export function resolveFlightSearchCriteria(input: unknown): FlightSearchResolution {
+  const result = validateFlightSearchCriteria(input);
+  return result.success ? search(result.data) : result;
 }
 
 export function resolveFlightSearchQuery(input: unknown): FlightSearchResolution {
