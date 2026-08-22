@@ -32,7 +32,6 @@ flowchart LR
     Domain --> Service[Server-only service]
     Service --> Data[Static JSON data]
     UI --> Primitives[Shared UI primitives]
-    API --> Service
 ```
 
 The URL stores the airport pair and date, so searches are bookmarkable and server-rendered. Zod validates data at system boundaries, while domain logic stays separate from UI and transport concerns.
