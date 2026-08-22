@@ -26,14 +26,13 @@ Next.js · React · TypeScript · React Aria Components · Zod · CSS Modules ·
 
 ```mermaid
 flowchart LR
+    flowchart LR
     UI[App Router pages] --> Feature[Flight search feature]
     Feature --> Components[Feature components]
     Feature --> Domain[Validation and search logic]
-    Domain --> Service[Server-only service]
-    Service --> Data[Static JSON data]
+    Domain --> API[API adapter]
     UI --> Primitives[Shared UI primitives]
-    UI --> API[Optional API adapter]
-    API --> Service
+    API --> Service[Static JSON]
 ```
 
 The URL stores the airport pair and date, so searches are bookmarkable and server-rendered. Zod validates data at system boundaries, while domain logic stays separate from UI and transport concerns.
