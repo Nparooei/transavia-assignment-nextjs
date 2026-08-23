@@ -1,0 +1,21 @@
+.searchWrap {
+  position: relative;
+  margin-top: calc(-1 * var(--search-overlap));
+}
+
+.dataNote {
+  margin: 14px 4px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.dataNote span {
+  margin-right: 5px;
+  color: var(--green-600);
+}
+
+@media (max-width: 650px) {
+  .dataNote {
+    line-height: 1.5;
+  }
+}

@@ -1,0 +1,18 @@
+.page {
+  --search-overlap: 56px;
+}
+
+.shell {
+  width: min(var(--content-width), calc(100% - 40px));
+  margin-inline: auto;
+}
+
+@media (max-width: 650px) {
+  .page {
+    --search-overlap: 88px;
+  }
+
+  .shell {
+    width: min(100% - 28px, var(--content-width));
+  }
+}

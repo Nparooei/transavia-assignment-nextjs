@@ -2,6 +2,7 @@
 
 import { SyntheticEvent, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import layoutStyles from "@/components/layout/page-layout/page-layout.module.css";
 import { useFlightSearchConfig } from "@/features/flight-search/components/flight-search-config-provider/flight-search-config-provider";
 import { airportLabel, resolveAirportCode } from "@/features/flight-search/lib/flights";
 import { buildFlightSearchUrl } from "@/features/flight-search/lib/flight-search-url";
@@ -10,7 +11,7 @@ import type { FlightSearchUrlState } from "@/features/flight-search/types/flight
 import type { FlightSearchState } from "@/features/flight-search/types/search";
 import { ResultsSection } from "../results-section/results-section";
 import { SearchForm } from "../search-form/search-form";
-import styles from "../flight-search-page/flight-search-page.module.css";
+import styles from "./flight-search.module.css";
 
 interface FlightSearchProps {
   initialUrlState?: FlightSearchUrlState;
@@ -112,7 +113,7 @@ export function FlightSearch({
 
   return (
     <>
-      <div className={`${styles.shell} ${styles.searchWrap}`}>
+      <div className={`${layoutStyles.shell} ${styles.searchWrap}`}>
         <SearchForm
           airports={airports}
           destinationAirports={destinationAirports}
@@ -140,7 +141,7 @@ export function FlightSearch({
       </div>
 
       <ResultsSection
-        shellClassName={styles.shell}
+        shellClassName={layoutStyles.shell}
         error={error}
         resultDestinationName={resultDestinationName}
         resultsRef={resultsRef}

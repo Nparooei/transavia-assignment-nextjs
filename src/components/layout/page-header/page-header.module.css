@@ -1,12 +1,3 @@
-.page {
-  --search-overlap: 56px;
-}
-
-.shell {
-  width: min(var(--content-width), calc(100% - 40px));
-  margin-inline: auto;
-}
-
 .hero {
   min-height: 380px;
   overflow: hidden;
@@ -76,40 +67,7 @@
   font-size: 17px;
 }
 
-.searchWrap {
-  position: relative;
-  margin-top: calc(-1 * var(--search-overlap));
-}
-
-.dataNote {
-  margin: 14px 4px 0;
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.dataNote span {
-  margin-right: 5px;
-  color: var(--green-600);
-}
-
-.footer {
-  display: flex;
-  justify-content: space-between;
-  padding-block: 25px;
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 12px;
-}
-
 @media (max-width: 650px) {
-  .page {
-    --search-overlap: 88px;
-  }
-
-  .shell {
-    width: min(100% - 28px, var(--content-width));
-  }
-
   .hero {
     min-height: 410px;
   }
@@ -124,14 +82,5 @@
 
   .heroCopy {
     padding-top: 45px;
-  }
-
-  .dataNote {
-    line-height: 1.5;
-  }
-
-  .footer {
-    flex-direction: column;
-    gap: 6px;
   }
 }
