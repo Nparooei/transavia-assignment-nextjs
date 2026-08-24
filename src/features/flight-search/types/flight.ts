@@ -1,12 +1,16 @@
 // Compatibility export for consumers. Runtime schemas are the source of truth.
 export type {
-  Airport,
-  AirportsResponse,
   ApiErrorResponse,
-  FlightOffer,
   FlightSearchConfig,
   FlightSearchResponse,
-  FlightSearchUrlState,
+} from "@/features/flight-search/schemas/api";
+export type {
+  Airport,
+  AirportsResponse,
+  FlightOffer,
   FlightsResponse,
-  SearchCriteria,
 } from "@/features/flight-search/schemas/flight";
+export type {
+  FlightSearchUrlState,
+  SearchCriteria,
+} from "@/features/flight-search/schemas/search";

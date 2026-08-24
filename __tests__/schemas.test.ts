@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
+import { FlightSearchResponseSchema } from "@/features/flight-search/schemas/api";
 import {
-  FlightSearchResponseSchema,
   FlightSearchUrlStateSchema,
   SearchCriteriaSchema,
   createFlightSearchRouteStateSchema,
-} from "@/features/flight-search/schemas/flight";
+} from "@/features/flight-search/schemas/search";
 
 describe("flight API schemas", () => {
   it("accepts valid search criteria", () => {

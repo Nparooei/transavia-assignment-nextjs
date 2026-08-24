@@ -6,7 +6,7 @@ import layoutStyles from "@/components/layout/page-layout/page-layout.module.css
 import { useFlightSearchConfig } from "@/features/flight-search/components/flight-search-config-provider/flight-search-config-provider";
 import { airportLabel, resolveAirportCode } from "@/features/flight-search/lib/flights";
 import { buildFlightSearchUrl } from "@/features/flight-search/lib/flight-search-url";
-import { SearchCriteriaSchema } from "@/features/flight-search/schemas/flight";
+import { SearchCriteriaSchema } from "@/features/flight-search/schemas/search";
 import type { FlightSearchUrlState } from "@/features/flight-search/types/flight";
 import type { FlightSearchState } from "@/features/flight-search/types/search";
 import { ResultsSection } from "../results-section/results-section";

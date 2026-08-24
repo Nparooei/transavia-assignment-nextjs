@@ -35,9 +35,7 @@ test.describe("flight route validation", () => {
 
       expect(response?.status()).toBe(404);
       await expect(page.getByText("This page could not be found.")).toBeVisible();
-      await expect(
-        page.getByRole("heading", { name: "Where will you go next?" }),
-      ).toHaveCount(0);
+      await expect(page.getByRole("combobox", { name: "Origin" })).toHaveCount(0);
       await expect(page.getByRole("heading", { name: "Check your search" })).toHaveCount(0);
     });
   }

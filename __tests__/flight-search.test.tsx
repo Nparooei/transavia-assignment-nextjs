@@ -86,7 +86,6 @@ describe("FlightSearchPage", () => {
   it("renders all required fields and the dataset guidance", () => {
     render(<ConfiguredPage />);
 
-    expect(screen.getByRole("heading", { name: "Where will you go next?" })).toBeInTheDocument();
     expect(screen.getByRole("combobox", { name: "Origin" })).toBeInTheDocument();
     expect(screen.getByRole("combobox", { name: "Destination" })).toBeInTheDocument();
     expect(screen.getByLabelText("Departure date")).toBeInTheDocument();

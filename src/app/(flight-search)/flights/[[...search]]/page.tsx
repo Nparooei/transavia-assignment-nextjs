@@ -1,7 +1,11 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { FlightSearchPage } from "@/features/flight-search/components/flight-search-page/flight-search-page";
-import { createFlightSearchRouteStateSchema } from "@/features/flight-search/schemas/flight";
-import { resolveFlightSearchCriteria } from "@/features/flight-search/server/flight-search-service";
+import { createFlightSearchRouteStateSchema } from "@/features/flight-search/schemas/search";
+import {
+  getFlightSearchConfig,
+  resolveFlightSearchCriteria,
+} from "@/features/flight-search/server/flight-search-service";
 
 interface FlightsPageProps {
   params: Promise<{ search?: string[] }>;
@@ -9,6 +13,27 @@ interface FlightsPageProps {
 }
 
 const FlightSearchRouteStateSchema = createFlightSearchRouteStateSchema();
+const airportNames = new Map(
+  getFlightSearchConfig().airports.map(({ ItemName, AirportName }) => [
+    ItemName,
+    AirportName.replace(/\s+\([^)]*\)$/, ""),
+  ]),
+);
+
+export async function generateMetadata({
+  params,
+}: FlightsPageProps): Promise<Metadata> {
+  const { search } = await params;
+  const [originCode, destinationCode] = search ?? [];
+  const origin = airportNames.get(originCode);
+  const destination = airportNames.get(destinationCode);
+
+  if (!origin || !destination) return {};
+
+  return {
+    title: `Flights from ${origin} to ${destination} | Transavia`,
+  };
+}
 
 export default async function FlightsPage({ params, searchParams }: FlightsPageProps) {
   const [{ search }, { departureDate }] = await Promise.all([params, searchParams]);

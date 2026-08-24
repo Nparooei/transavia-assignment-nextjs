@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import FlightsPage from "@/app/flights/[[...search]]/page";
+import FlightsPage from "@/app/(flight-search)/flights/[[...search]]/page";
 
 const navigation = vi.hoisted(() => ({
   notFound: vi.fn((): never => {

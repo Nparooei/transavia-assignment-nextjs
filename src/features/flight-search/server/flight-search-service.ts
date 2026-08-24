@@ -5,14 +5,18 @@ import flightsData from "./data/flights-from-AMS.json";
 import { searchFlights } from "@/features/flight-search/lib/flights";
 import {
   ApiErrorResponseSchema,
+  FlightSearchConfigSchema,
+} from "@/features/flight-search/schemas/api";
+import {
   AirportsResponseSchema,
+  FlightsResponseSchema,
+} from "@/features/flight-search/schemas/flight";
+import {
   FLIGHT_DATA_MAX_DATE,
   FLIGHT_DATA_MIN_DATE,
-  FlightSearchConfigSchema,
-  FlightsResponseSchema,
   SearchCriteriaQuerySchema,
   SearchCriteriaSchema,
-} from "@/features/flight-search/schemas/flight";
+} from "@/features/flight-search/schemas/search";
 import type {
   ApiErrorResponse,
   FlightSearchConfig,

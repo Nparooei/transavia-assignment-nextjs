@@ -1,5 +1,5 @@
 import type { FlightSearchUrlState } from "@/features/flight-search/types/flight";
-import { FlightSearchUrlStateSchema } from "@/features/flight-search/schemas/flight";
+import { FlightSearchUrlStateSchema } from "@/features/flight-search/schemas/search";
 
 export function buildFlightSearchUrl(state: FlightSearchUrlState): string {
   const { origin, destination, departureDate } = FlightSearchUrlStateSchema.parse(state);
