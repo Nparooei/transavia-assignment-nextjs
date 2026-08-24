@@ -15,10 +15,15 @@ export function FlightCard({ offer }: FlightCardProps) {
   return (
     <article className={styles.card}>
       <div className={styles.flightNumber}>
-        <span className={styles.mark}><Icon name="plane" /></span>
+        <span className={styles.mark}>
+          <Icon name="plane" />
+        </span>
         <div>
           <span>Transavia</span>
-          <strong>{flight.marketingAirline.companyShortName}{flight.flightNumber}</strong>
+          <strong>
+            {flight.marketingAirline.companyShortName}
+            {flight.flightNumber}
+          </strong>
         </div>
       </div>
 
@@ -29,7 +34,9 @@ export function FlightCard({ offer }: FlightCardProps) {
         </div>
         <div className={styles.route}>
           <span>{flightDuration(flight.departureDateTime, flight.arrivalDateTime)}</span>
-          <div><Icon name="plane" /></div>
+          <div>
+            <Icon name="plane" />
+          </div>
           <small>Direct</small>
         </div>
         <div className={`${styles.airportTime} ${styles.arrival}`}>
@@ -49,7 +56,12 @@ export function FlightCard({ offer }: FlightCardProps) {
         <small>total price</small>
       </div>
 
-      <ActionLink className={styles.select} href={offer.deeplink.href} target="_blank" rel="noreferrer">
+      <ActionLink
+        className={styles.select}
+        href={offer.deeplink.href}
+        target="_blank"
+        rel="noreferrer"
+      >
         Select
         <Icon name="arrow" />
       </ActionLink>

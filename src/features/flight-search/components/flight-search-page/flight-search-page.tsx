@@ -9,10 +9,7 @@ interface FlightSearchPageProps {
 }
 
 /** Server composition boundary; the route owns validation and data resolution. */
-export function FlightSearchPage({
-  initialSearchState,
-  initialUrlState,
-}: FlightSearchPageProps) {
+export function FlightSearchPage({ initialSearchState, initialUrlState }: FlightSearchPageProps) {
   return (
     <FlightSearch
       key={buildFlightSearchUrl(initialUrlState ?? {})}

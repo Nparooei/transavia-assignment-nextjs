@@ -16,16 +16,15 @@ export const SearchCriteriaSchema = z
   })
   .refine(
     ({ departureDate }) =>
-      departureDate >= FLIGHT_DATA_MIN_DATE &&
-      departureDate <= FLIGHT_DATA_MAX_DATE,
+      departureDate >= FLIGHT_DATA_MIN_DATE && departureDate <= FLIGHT_DATA_MAX_DATE,
     {
       message: `Departure date must be between ${FLIGHT_DATA_MIN_DATE} and ${FLIGHT_DATA_MAX_DATE}.`,
       path: ["departureDate"],
     },
   );
 
-export const SearchDateSchema = z
-  .iso.date()
+export const SearchDateSchema = z.iso
+  .date()
   .refine(
     (date) => date >= FLIGHT_DATA_MIN_DATE && date <= FLIGHT_DATA_MAX_DATE,
     `Date must be between ${FLIGHT_DATA_MIN_DATE} and ${FLIGHT_DATA_MAX_DATE}.`,
@@ -43,8 +42,7 @@ export const FlightSearchUrlStateSchema = z
     path: ["destination"],
   })
   .refine(
-    ({ origin, destination, departureDate }) =>
-      !departureDate || Boolean(origin && destination),
+    ({ origin, destination, departureDate }) => !departureDate || Boolean(origin && destination),
     {
       message: "A departure date requires both airports.",
       path: ["departureDate"],
@@ -74,13 +72,10 @@ export function createFlightSearchRouteStateSchema() {
       segments: RouteSegmentsSchema,
       departureDate: SearchDateSchema.optional(),
     })
-    .refine(
-      ({ segments, departureDate }) => !departureDate || segments.length === 2,
-      {
-        message: "A departure date requires both airports.",
-        path: ["departureDate"],
-      },
-    )
+    .refine(({ segments, departureDate }) => !departureDate || segments.length === 2, {
+      message: "A departure date requires both airports.",
+      path: ["departureDate"],
+    })
     .transform(({ segments, departureDate }) => ({
       origin: segments[0],
       destination: segments[1],

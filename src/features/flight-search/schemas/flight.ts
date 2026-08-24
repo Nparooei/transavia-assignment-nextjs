@@ -17,8 +17,7 @@ export const AirportsResponseSchema = z
     Airports: z.array(AirportSchema).min(1),
   })
   .refine(
-    ({ Airports }) =>
-      new Set(Airports.map((airport) => airport.ItemName)).size === Airports.length,
+    ({ Airports }) => new Set(Airports.map((airport) => airport.ItemName)).size === Airports.length,
     {
       message: "Airport codes must be unique.",
       path: ["Airports"],

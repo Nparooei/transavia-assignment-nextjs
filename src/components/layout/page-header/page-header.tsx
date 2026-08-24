@@ -6,15 +6,8 @@ import styles from "./page-header.module.css";
 export function PageHeader() {
   return (
     <header className={styles.hero} id="top">
-      <nav
-        className={`${styles.nav} ${layoutStyles.shell}`}
-        aria-label="Main navigation"
-      >
-        <a
-          className={styles.brand}
-          href="#top"
-          aria-label="Transavia flight finder home"
-        >
+      <nav className={`${styles.nav} ${layoutStyles.shell}`} aria-label="Main navigation">
+        <a className={styles.brand} href="#top" aria-label="Transavia flight finder home">
           <span className={styles.brandMark}>
             <Icon name="plane" />
           </span>
@@ -28,8 +21,7 @@ export function PageHeader() {
           Where will you go next?
         </Typography>
         <Typography variant="body">
-          Search our available flights from Amsterdam and start looking forward to your
-          trip.
+          Search our available flights from Amsterdam and start looking forward to your trip.
         </Typography>
       </div>
     </header>

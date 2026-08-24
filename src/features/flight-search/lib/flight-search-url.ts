@@ -6,9 +6,7 @@ export function buildFlightSearchUrl(state: FlightSearchUrlState): string {
   const segments = origin ? ["flights", origin] : [];
   if (origin && destination) segments.push(destination);
 
-  const pathname = segments.length
-    ? `/${segments.map(encodeURIComponent).join("/")}`
-    : "/";
+  const pathname = segments.length ? `/${segments.map(encodeURIComponent).join("/")}` : "/";
   const params = new URLSearchParams();
   if (departureDate) params.set("departureDate", departureDate);
 

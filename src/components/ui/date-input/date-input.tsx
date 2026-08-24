@@ -12,14 +12,7 @@ interface DateInputProps {
   onChange: (value: string) => void;
 }
 
-export function DateInput({
-  label,
-  max,
-  min,
-  name,
-  value,
-  onChange,
-}: DateInputProps) {
+export function DateInput({ label, max, min, name, value, onChange }: DateInputProps) {
   return (
     <TextField
       className={dateStyles.field}

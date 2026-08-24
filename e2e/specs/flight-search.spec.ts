@@ -31,10 +31,7 @@ test.describe("flight search", () => {
     expect(await homeResponse?.text()).toContain("Aalborg, Denmark");
     const navigationPayload = page.waitForResponse((response) => {
       const url = new URL(response.url());
-      return (
-        url.pathname === "/flights/AMS/ALC" &&
-        url.searchParams.has("_rsc")
-      );
+      return url.pathname === "/flights/AMS/ALC" && url.searchParams.has("_rsc");
     });
     await search.search({
       origin: "AMS",
@@ -44,9 +41,7 @@ test.describe("flight search", () => {
 
     const navigationBody = await (await navigationPayload).text();
 
-    await expect(page).toHaveURL(
-      /\/flights\/AMS\/ALC\?departureDate=2022-11-10$/,
-    );
+    await expect(page).toHaveURL(/\/flights\/AMS\/ALC\?departureDate=2022-11-10$/);
     await expect(page.getByRole("heading", { name: "Amsterdam to Alicante" })).toBeVisible();
     await expect(page.getByText("HV6143")).toBeVisible();
     await expect(page.getByText("HV6145")).toBeVisible();
@@ -79,10 +74,7 @@ test.describe("flight search", () => {
       }
     });
     page.on("response", (response) => {
-      if (
-        new URL(response.url()).pathname.startsWith("/_next/") &&
-        response.status() >= 400
-      ) {
+      if (new URL(response.url()).pathname.startsWith("/_next/") && response.status() >= 400) {
         clientFailures.push(`${response.url()}: HTTP ${response.status()}`);
       }
     });
@@ -90,9 +82,7 @@ test.describe("flight search", () => {
     try {
       await page.goto("/flights/AMS/ALC?departureDate=2022-11-10");
 
-      await expect(page.getByRole("combobox", { name: "Origin" })).toHaveValue(
-        /AMS.*Amsterdam/,
-      );
+      await expect(page.getByRole("combobox", { name: "Origin" })).toHaveValue(/AMS.*Amsterdam/);
       await expect(page.getByRole("combobox", { name: "Destination" })).toHaveValue(
         /ALC.*Alicante/,
       );
@@ -132,9 +122,7 @@ test.describe("flight search", () => {
     try {
       await page.goto("/flights/AMS/ALC?departureDate=2022-11-10");
 
-      await expect(page.getByRole("combobox", { name: "Origin" })).toHaveValue(
-        /AMS.*Amsterdam/,
-      );
+      await expect(page.getByRole("combobox", { name: "Origin" })).toHaveValue(/AMS.*Amsterdam/);
       await expect(page.getByRole("heading", { name: "Amsterdam to Alicante" })).toBeVisible();
       await expect(page.getByText("HV6143")).toBeVisible();
     } finally {

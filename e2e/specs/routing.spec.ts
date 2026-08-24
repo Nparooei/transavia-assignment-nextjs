@@ -9,9 +9,7 @@ test.describe("flight route validation", () => {
   });
 
   test("returns a 404 for an invalid departure date", async ({ page }) => {
-    const response = await page.goto(
-      "/flights/AMS/ALC?departureDate=2022-12-01",
-    );
+    const response = await page.goto("/flights/AMS/ALC?departureDate=2022-12-01");
 
     expect(response?.status()).toBe(404);
   });
@@ -41,9 +39,7 @@ test.describe("flight route validation", () => {
   }
 
   test("keeps an available search with no matching flights as a valid page", async ({ page }) => {
-    const response = await page.goto(
-      "/flights/AMS/AMM?departureDate=2022-11-11",
-    );
+    const response = await page.goto("/flights/AMS/AMM?departureDate=2022-11-11");
 
     expect(response?.status()).toBe(200);
     await expect(page.getByRole("heading", { name: "No matching flights" })).toBeVisible();

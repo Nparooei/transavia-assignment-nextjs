@@ -10,7 +10,4 @@ export type {
   FlightOffer,
   FlightsResponse,
 } from "@/features/flight-search/schemas/flight";
-export type {
-  FlightSearchUrlState,
-  SearchCriteria,
-} from "@/features/flight-search/schemas/search";
+export type { FlightSearchUrlState, SearchCriteria } from "@/features/flight-search/schemas/search";

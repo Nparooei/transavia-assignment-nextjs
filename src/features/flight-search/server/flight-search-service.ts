@@ -50,8 +50,7 @@ const flightSearchConfig = FlightSearchConfigSchema.parse({
 });
 
 export type FlightSearchResolution =
-  | { success: true; data: FlightSearchState }
-  | { success: false; error: ApiErrorResponse };
+  { success: true; data: FlightSearchState } | { success: false; error: ApiErrorResponse };
 
 function validationError(error: ZodError): ApiErrorResponse {
   return ApiErrorResponseSchema.parse({

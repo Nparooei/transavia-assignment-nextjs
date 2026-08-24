@@ -55,7 +55,10 @@ export function AirportComboBox({
         <InputShell>
           <Icon name="pin" />
           <Input ref={inputRef} placeholder={placeholder} autoComplete="off" />
-          <AriaButton className={comboStyles.trigger} aria-label={`Show ${label.toLowerCase()} options`}>
+          <AriaButton
+            className={comboStyles.trigger}
+            aria-label={`Show ${label.toLowerCase()} options`}
+          >
             <Icon name="chevron" />
           </AriaButton>
         </InputShell>

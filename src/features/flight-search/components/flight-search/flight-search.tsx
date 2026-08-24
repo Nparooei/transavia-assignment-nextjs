@@ -25,10 +25,7 @@ interface SearchDraft {
 }
 
 /** Owns the interactive search draft, validation and route navigation. */
-export function FlightSearch({
-  initialUrlState,
-  initialSearchState,
-}: FlightSearchProps) {
+export function FlightSearch({ initialUrlState, initialSearchState }: FlightSearchProps) {
   const router = useRouter();
   const { airports, destinationCodes, maxDate, minDate } = useFlightSearchConfig();
   const airportByCode = useMemo(
@@ -40,8 +37,7 @@ export function FlightSearch({
     return airports.filter((airport) => availableCodes.has(airport.ItemName));
   }, [airports, destinationCodes]);
   const [draft, setDraft] = useState<SearchDraft>(() => {
-    const initialOrigin =
-      airportByCode.get(initialUrlState?.origin ?? "AMS") ?? airports[0];
+    const initialOrigin = airportByCode.get(initialUrlState?.origin ?? "AMS") ?? airports[0];
     const initialDestination = initialUrlState?.destination
       ? airportByCode.get(initialUrlState.destination)
       : undefined;
@@ -57,7 +53,7 @@ export function FlightSearch({
   const [isNavigating, startNavigation] = useTransition();
   const destinationInputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLElement>(null);
-  const searchState = error ? null : initialSearchState ?? null;
+  const searchState = error ? null : (initialSearchState ?? null);
 
   useEffect(() => {
     if (searchState || error) resultsRef.current?.focus();
@@ -107,8 +103,8 @@ export function FlightSearch({
   }
 
   const resultDestinationName = searchState
-    ? airportByCode.get(searchState.criteria.destination)?.AirportName ??
-      searchState.criteria.destination
+    ? (airportByCode.get(searchState.criteria.destination)?.AirportName ??
+      searchState.criteria.destination)
     : null;
 
   return (
@@ -124,9 +120,7 @@ export function FlightSearch({
           minDate={minDate}
           maxDate={maxDate}
           isLoading={isNavigating}
-          onOriginChange={(value) =>
-            setDraft((current) => ({ ...current, origin: value }))
-          }
+          onOriginChange={(value) => setDraft((current) => ({ ...current, origin: value }))}
           onDestinationChange={(value) =>
             setDraft((current) => ({ ...current, destination: value }))
           }
@@ -136,7 +130,8 @@ export function FlightSearch({
           onSubmit={submitSearch}
         />
         <p className={styles.dataNote}>
-          <span aria-hidden="true">●</span> Available data: departures from Amsterdam, 10–30 November 2022
+          <span aria-hidden="true">●</span> Available data: departures from Amsterdam, 10–30
+          November 2022
         </p>
       </div>
 

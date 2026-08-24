@@ -10,10 +10,7 @@ interface FlightSearchConfigProviderProps {
   config: FlightSearchConfig;
 }
 
-export function FlightSearchConfigProvider({
-  children,
-  config,
-}: FlightSearchConfigProviderProps) {
+export function FlightSearchConfigProvider({ children, config }: FlightSearchConfigProviderProps) {
   return (
     <FlightSearchConfigContext.Provider value={config}>
       {children}

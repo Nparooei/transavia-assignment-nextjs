@@ -19,10 +19,7 @@ export function resolveAirportCode(value: string, airports: Airport[]): string |
   return match?.ItemName ?? null;
 }
 
-export function searchFlights(
-  flights: FlightOffer[],
-  criteria: SearchCriteria,
-): FlightOffer[] {
+export function searchFlights(flights: FlightOffer[], criteria: SearchCriteria): FlightOffer[] {
   return flights
     .filter((offer) => {
       const flight = offer.outboundFlight;
@@ -34,9 +31,7 @@ export function searchFlights(
       );
     })
     .sort((a, b) =>
-      a.outboundFlight.departureDateTime.localeCompare(
-        b.outboundFlight.departureDateTime,
-      ),
+      a.outboundFlight.departureDateTime.localeCompare(b.outboundFlight.departureDateTime),
     );
 }
 

@@ -20,9 +20,7 @@ const airportNames = new Map(
   ]),
 );
 
-export async function generateMetadata({
-  params,
-}: FlightsPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: FlightsPageProps): Promise<Metadata> {
   const { search } = await params;
   const [originCode, destinationCode] = search ?? [];
   const origin = airportNames.get(originCode);
@@ -51,10 +49,5 @@ export default async function FlightsPage({ params, searchParams }: FlightsPageP
   const resolution = resolveFlightSearchCriteria(result.data);
   if (!resolution.success) notFound();
 
-  return (
-    <FlightSearchPage
-      initialSearchState={resolution.data}
-      initialUrlState={result.data}
-    />
-  );
+  return <FlightSearchPage initialSearchState={resolution.data} initialUrlState={result.data} />;
 }

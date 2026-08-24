@@ -20,7 +20,10 @@
   border: 1px solid var(--line);
   border-radius: 10px;
   background: #fbfcfc;
-  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    background 0.2s;
 }
 
 .inputShell:focus-within {
